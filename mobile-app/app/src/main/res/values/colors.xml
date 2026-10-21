@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kanagawa (wave) palette -->
+<resources>
+    <color name="bg">#1F1F28</color>              <!-- sumiInk3 -->
+    <color name="nav_bar">#16161D</color>         <!-- sumiInk0 -->
+    <color name="surface">#D92A2A37</color>       <!-- sumiInk4, 85% -->
+    <color name="surface_solid">#2A2A37</color>
+    <color name="stroke">#54546D</color>          <!-- sumiInk6 -->
+    <color name="stroke_soft">#66363646</color>   <!-- sumiInk5, 40% -->
+    <color name="pill_bg">#B32A2A37</color>
+    <color name="text_primary">#DCD7BA</color>    <!-- fujiWhite -->
+    <color name="text_secondary">#A6A69C</color>  <!-- dragonGray -->
+    <color name="accent_blue">#7E9CD8</color>     <!-- crystalBlue -->
+
+    <color name="walking_accent">#98BB6C</color>  <!-- springGreen -->
+    <color name="walking_soft">#D92B3328</color>  <!-- winterGreen -->
+    <color name="running_accent">#FFA066</color>  <!-- surimiOrange -->
+    <color name="running_soft">#D943242B</color>  <!-- winterRed -->
+    <color name="unknown_accent">#938AA9</color>  <!-- springViolet1 -->
+    <color name="unknown_soft">#D9252535</color>  <!-- winterBlue -->
+
+    <color name="status_live">#98BB6C</color>
+    <color name="status_offline">#E46876</color>  <!-- waveRed -->
+
+    <color name="ic_launcher_background">#1F1F28</color>
+</resources>
