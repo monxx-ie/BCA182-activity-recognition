@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:15
+    container_name: iot_backend-db-1
+    environment:
+      POSTGRES_DB: activity_data
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  mqtt:
+    image: eclipse-mosquitto:latest
+    container_name: iot_backend-mqtt-1
+    ports:
+      - "1883:1883"
+    command: mosquitto -c /dev/null -p 1883
+    entrypoint: ["sh", "-c", "echo 'listener 1883\nallow_anonymous true' > /tmp/m.conf && exec mosquitto -c /tmp/m.conf"]
+
+volumes:
+  pgdata:
