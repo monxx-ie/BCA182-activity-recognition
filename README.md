@@ -178,7 +178,7 @@ The current implementation is a solid proof-of-concept. The next improvements sh
 
 ## Team
 
-- Ni-ear — Firmware & Backend
+- Shaqkobe Dos P. Tejada — Firmware & Backend
 - Cassandra Khan P. Mendoza — Mobile app
 - Team members can be added here as the project evolves.
 
