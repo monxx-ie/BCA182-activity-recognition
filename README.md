@@ -207,7 +207,7 @@ The current implementation is a solid proof-of-concept. The next improvements sh
 
 - Shaqkobe Dos P. Tejada — Firmware & Backend
 - Cassandra Khan P. Mendoza — Mobile app
-- Team members can be added here as the project evolves.
+- Carl Hovan B. Chan — Documentation, testing and Demo
 
 Section B187.1, MSU-IIT CCS
 
