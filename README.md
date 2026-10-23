@@ -208,6 +208,7 @@ The current implementation is a solid proof-of-concept. The next improvements sh
 - Shaqkobe Dos P. Tejada — Firmware & Backend
 - Cassandra Khan P. Mendoza — Mobile app
 - Carl Hovan B. Chan — Documentation, testing and Demo
+- Sean Marie G. Rabago - Demo, Documentation and testing
 
 Section B187.1, MSU-IIT CCS
 
