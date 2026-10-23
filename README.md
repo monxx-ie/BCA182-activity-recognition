@@ -6,9 +6,36 @@ Real-time walking/running recognition using an RT-Spark (STM32) board, MQTT, a F
 
 This project collects motion data from an embedded sensor board, sends it through MQTT, predicts the activity in a Python backend, stores the result in a database, and displays it in a mobile app.
 
-System flow:
+### System Architecture Diagram
 
-Sensor board → MQTT (`device/sensor_data`) → Flask backend (ML inference + PostgreSQL) → REST API → Android app
+```mermaid
+flowchart LR
+    subgraph Hardware ["1. Board"]
+        A["RT-Spark (STM32)<br/>6-Axis IMU"]
+    end
+
+    subgraph Broker ["2. MQTT"]
+        B("Eclipse Mosquitto<br/>Port: 1883<br/>Topic: device/sensor_data")
+    end
+
+    subgraph Backend ["3. Flask"]
+        C["Flask Backend (app.py)<br/>Port: 5000<br/>Scaler + TF Model"]
+    end
+
+    subgraph DB ["4. Database"]
+        D[("PostgreSQL 15<br/>Port: 5432<br/>DB: activity_data")]
+    end
+
+    subgraph Client ["5. App"]
+        E["Android App (Kotlin)<br/>Polls every 2000ms"]
+    end
+
+    A -->|"JSON Payload<br/>(ax, ay, az, gx, gy, gz)"| B
+    B -->|"MQTT Stream"| C
+    C -->|"Log Activity & IMU"| D
+    D -->|"Query Logs"| C
+    E <-->|"GET /api/activity/latest<br/>GET /api/activity/history"| C
+```
 
 ## Project Structure
 
