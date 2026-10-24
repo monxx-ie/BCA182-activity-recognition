@@ -184,6 +184,27 @@ The backend expects sensor data shaped like this:
 }
 ```
 
+## Model Evaluation
+
+The activity recognition model was trained using accelerometer and gyroscope data from the walking and running dataset.
+
+The model uses six input features:
+
+- Acceleration X
+- Acceleration Y
+- Acceleration Z
+- Gyroscope X
+- Gyroscope Y
+- Gyroscope Z
+
+The dataset was divided into training and testing sets, with 20% of the data used for testing.
+
+### Test Result
+
+**Model Test Accuracy: 98.81%**
+
+This result indicates that the trained model was able to correctly classify walking and running activities on most of the held-out test samples.
+
 ## Important Notes
 
 - The project currently assumes a local network and local services.
