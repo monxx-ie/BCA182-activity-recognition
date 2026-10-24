@@ -186,24 +186,22 @@ The backend expects sensor data shaped like this:
 
 ## Model Evaluation
 
-The activity recognition model was trained using accelerometer and gyroscope data from the walking and running dataset.
+The activity recognition model is a lightweight 1D-CNN that classifies walking vs running from a **window of the last 10 sensor readings** (time-series input), so it learns patterns over time instead of judging a single reading.
 
-The model uses six input features:
+Input per reading (6 channels):
 
-- Acceleration X
-- Acceleration Y
-- Acceleration Z
-- Gyroscope X
-- Gyroscope Y
-- Gyroscope Z
+- Acceleration X, Y, Z (g)
+- Gyroscope X, Y, Z (rad/s)
 
-The dataset was divided into training and testing sets, with 20% of the data used for testing.
+The RT-Spark sends raw sensor counts, so the backend converts them to the dataset's units (g and rad/s) before prediction.
+
+The dataset was split by whole recordings (80% training, 20% testing), so test windows never come from a recording used for training.
 
 ### Test Result
 
-**Model Test Accuracy: 98.81%**
+**Test accuracy (held-out recordings): 100.00%**
 
-This result indicates that the trained model was able to correctly classify walking and running activities on most of the held-out test samples.
+This was measured on held-out recordings from the walking/running dataset, which comes from a single user. Performance on other users and on live board data may differ.
 
 ## Important Notes
 
