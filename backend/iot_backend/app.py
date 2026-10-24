@@ -1,4 +1,6 @@
 import json
+import math
+from collections import deque
 import psycopg2
 import numpy as np
 import joblib
@@ -12,6 +14,17 @@ app = Flask(__name__)
 print("Loading trained activity model and scaler...")
 model = tf.keras.models.load_model('activity_model.h5')
 scaler = joblib.load('scaler.pkl')
+
+# --- Windowed (time-series) prediction settings ---
+# WINDOW must match WINDOW in train_model.py.
+WINDOW = 10
+recent_readings = deque(maxlen=WINDOW)   # last WINDOW readings, in dataset units
+
+# The RT-Spark sends RAW ICM20608 sensor counts. The model was trained on the
+# Kaggle dataset: accelerometer in g, gyroscope in rad/s. Convert before predicting.
+RAW_SENSOR_VALUES = True
+ACCEL_LSB_PER_G = 16384.0     # +-2 g range (az is ~16000 when the board lies flat)
+GYRO_LSB_PER_DPS = 16.4       # +-2000 dps range. If the driver uses +-250 dps, use 131.0
 
 # --- PostgreSQL Setup ---
 DB_CONFIG = {
@@ -46,25 +59,39 @@ def init_db():
 init_db()
 
 # --- ML Inference ---
+def to_model_units(sensor_data):
+    """Returns [ax, ay, az, gx, gy, gz] in g and rad/s (the training units)."""
+    ax = float(sensor_data.get('ax', 0.0))
+    ay = float(sensor_data.get('ay', 0.0))
+    az = float(sensor_data.get('az', 0.0))
+    gx = float(sensor_data.get('gx', 0.0))
+    gy = float(sensor_data.get('gy', 0.0))
+    gz = float(sensor_data.get('gz', 0.0))
+    if RAW_SENSOR_VALUES:
+        ax, ay, az = ax / ACCEL_LSB_PER_G, ay / ACCEL_LSB_PER_G, az / ACCEL_LSB_PER_G
+        k = math.pi / 180.0 / GYRO_LSB_PER_DPS      # raw counts -> rad/s
+        gx, gy, gz = gx * k, gy * k, gz * k
+    return [ax, ay, az, gx, gy, gz]
+
+
 def predict_activity(sensor_data):
     """
-    Scales incoming sensor readings and predicts activity using TensorFlow.
+    Adds the newest reading to a sliding window of the last WINDOW readings and
+    predicts the activity from the whole window (uses temporal information).
     Expected dict keys: ax, ay, az, gx, gy, gz
     """
-    raw_features = np.array([[
-        sensor_data.get('ax', 0.0),
-        sensor_data.get('ay', 0.0),
-        sensor_data.get('az', 0.0),
-        sensor_data.get('gx', 0.0),
-        sensor_data.get('gy', 0.0),
-        sensor_data.get('gz', 0.0)
-    ]])
-    
-    # Scale features matching training distribution
-    scaled_features = scaler.transform(raw_features)
-    
-    # Predict (Output probability > 0.5 = Running, else Walking)
-    prediction = model.predict(scaled_features, verbose=0)[0][0]
+    recent_readings.append(to_model_units(sensor_data))
+
+    window = list(recent_readings)
+    # Right after startup the window isn't full yet: pad it by repeating the oldest reading.
+    while len(window) < WINDOW:
+        window.insert(0, window[0])
+
+    scaled = scaler.transform(np.array(window))            # (WINDOW, 6)
+    scaled = scaled.reshape(1, WINDOW, 6).astype(np.float32)
+
+    # Output probability > 0.5 = Running, else Walking
+    prediction = model.predict(scaled, verbose=0)[0][0]
     return "running" if prediction > 0.5 else "walking"
 
 # --- MQTT Callbacks ---
